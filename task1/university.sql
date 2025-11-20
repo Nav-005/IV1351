@@ -138,6 +138,47 @@ CREATE TABLE allocation (
 ALTER TABLE allocation ADD CONSTRAINT PK_allocation PRIMARY KEY (employee_id_0,planned_activity_id,instance_id);
 
 
+
+--trigger
+-- First, create the trigger function
+CREATE OR REPLACE FUNCTION check_teacher_allocation()
+RETURNS TRIGGER AS $$
+DECLARE
+    current_period CHAR(2);
+    allocation_count INT;
+BEGIN
+    -- Get the study period of the planned activity being allocated
+    SELECT ci.study_period INTO current_period
+    FROM planned_activity pa
+    JOIN course_instance ci ON pa.instance_id = ci.instance_id
+    WHERE pa.planned_activity_id = NEW.planned_activity_id;
+
+    -- Count how many distinct course instances this employee is already allocated to in this period
+    SELECT COUNT(DISTINCT a.instance_id) INTO allocation_count
+    FROM allocation a
+    JOIN planned_activity pa ON a.planned_activity_id = pa.planned_activity_id
+    JOIN course_instance ci ON pa.instance_id = ci.instance_id
+    WHERE a.employee_id_0 = NEW.employee_id_0
+      AND ci.study_period = current_period;
+
+    -- If allocation_count is already 4, raise an exception
+    IF allocation_count >= 4 THEN
+        RAISE EXCEPTION 'Teacher % is already allocated to 4 course instances in period %', NEW.employee_id_0, current_period;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Now, create the trigger on the allocation table
+CREATE TRIGGER trg_check_teacher_allocation
+BEFORE INSERT OR UPDATE ON allocation
+FOR EACH ROW
+EXECUTE FUNCTION check_teacher_allocation();
+--trigger
+
+
+
 ALTER TABLE phone_number ADD CONSTRAINT FK_phone_number_0 FOREIGN KEY (person_id) REFERENCES person (person_id) ON DELETE RESTRICT;
 
 
@@ -287,10 +328,7 @@ INSERT INTO allocation (employee_id_0, planned_activity_id, instance_id, allocat
 (4,4,4,5.0);
 
 --test_queries
-
-SELECT pa.planned_activity_id, ci.course_id, ci.num_students, e.first_name, e.last_name, ta.activity_name, pa.planned_hours
-FROM planned_activity pa
-JOIN course_instance ci ON pa.instance_id = ci.instance_id
-JOIN employee e ON pa.employee_id::int = e.employee_id
-JOIN teaching_activity ta ON pa.activity_type_id = ta.activity_type_id;
-
+SELECT d.department_id, d.department_name, e.employee_id, e.salary, p.first_name, p.last_name
+FROM department d
+LEFT JOIN employee e ON e.department_id = d.department_id
+LEFT JOIN person p ON e.person_id = p.person_id;
