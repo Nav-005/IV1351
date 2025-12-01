@@ -330,8 +330,7 @@ INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours) VALUE
 
 
 
--- TABLE4 QUERY
-
+--QUERY 1: Planned hours calculations:
 SELECT 
     cl.course_code,
     ci.instance_id AS "Course Instance ID",
@@ -362,9 +361,8 @@ WHERE ci.study_year = 2023
 GROUP BY cl.course_code, ci.instance_id, cl.hp, ci.study_period, ci.num_students, ci.admin_hours, ci.exam_hours
 ORDER BY cl.course_code, ci.instance_id;
 
--- TBALE 2
 
--- TBALE 2
+--QUERY 2: Actual allocated hours for a course:
 SELECT
     cl.course_code,
     ci.instance_id AS "Course Instance ID",
@@ -397,7 +395,7 @@ JOIN job_title jt ON e.job_title_id = jt.job_title_id
 JOIN person p ON e.person_id = p.person_id
 
 WHERE ci.study_year = 2023
-	 AND cl.course_code = 'MATH101'
+	 AND ci.course_id = 1
 
 GROUP BY cl.course_code, ci.instance_id, cl.hp, p.first_name, p.last_name, jt.jobtitle, ci.admin_hours, ci.exam_hours
 
