@@ -15,4 +15,6 @@ WITH teacher_course_count AS (
 SELECT *
 FROM teacher_course_count
 WHERE "Period" = 'P3'
+ AND "No of courses" >= 2
+
 ORDER BY "No of courses" DESC, "Teacher's Name";
