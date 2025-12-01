@@ -296,9 +296,39 @@ INSERT INTO planned_activity (planned_hours, activity_type_id, employee_id, inst
 (2,7,10,10);
 
 -- ALLOCATIONS
+-- ALLOCATIONS: Assign every planned activity to a teacher with allocated hours
 INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours) VALUES
-(1,1,10.0),(2,2,8.0),(3,3,6.0),(4,4,5.0),(5,5,12.0),
-(6,6,9.0),(7,7,7.0),(8,8,11.0),(9,9,4.0),(10,10,3.0);
+-- MATH101 (instance_id=1)
+(1,1,10),(2,3,6),(3,1,4),(4,2,2),(5,3,3),
+
+-- PHYS101 (instance_id=2)
+(6,2,8),(7,2,5),(8,2,6),(9,2,3),(10,2,2),
+
+-- CHEM101 (instance_id=3)
+(11,3,7),(12,3,4),(13,3,8),(14,3,2),(15,3,3),
+
+-- BIOL101 (instance_id=4)
+(16,4,5),(17,4,3),(18,4,4),(19,4,2),(20,4,1),
+
+-- ENG101 (instance_id=5)
+(21,5,6),(22,5,4),(23,5,0),(24,5,2),(25,5,3),
+
+-- HIST101 (instance_id=6)
+(26,6,5),(27,6,3),(28,6,0),(29,6,2),(30,6,2),
+
+-- CS101 (instance_id=7)
+(31,7,9),(32,7,6),(33,7,8),(34,7,4),(35,7,5),
+
+-- ART101 (instance_id=8)
+(36,8,4),(37,8,0),(38,8,0),(39,8,3),(40,8,4),
+
+-- MUS101 (instance_id=9)
+(41,9,3),(42,9,2),(43,9,0),(44,9,1),(45,9,2),
+
+-- PHIL101 (instance_id=10)
+(46,10,4),(47,10,3),(48,10,0),(49,10,1),(50,10,2);
+
+
 
 -- TABLE4 QUERY
 
@@ -333,6 +363,8 @@ GROUP BY cl.course_code, ci.instance_id, cl.hp, ci.study_period, ci.num_students
 ORDER BY cl.course_code, ci.instance_id;
 
 -- TBALE 2
+
+-- TBALE 2
 SELECT
     cl.course_code,
     ci.instance_id AS "Course Instance ID",
@@ -365,6 +397,7 @@ JOIN job_title jt ON e.job_title_id = jt.job_title_id
 JOIN person p ON e.person_id = p.person_id
 
 WHERE ci.study_year = 2023
+	 AND cl.course_code = 'MATH101'
 
 GROUP BY cl.course_code, ci.instance_id, cl.hp, p.first_name, p.last_name, jt.jobtitle, ci.admin_hours, ci.exam_hours
 
