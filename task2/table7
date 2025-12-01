@@ -1,0 +1,18 @@
+WITH teacher_course_count AS (
+    SELECT
+        e.employee_id AS "Employee ID",
+        p.first_name || ' ' || p.last_name AS "Teacher's Name",
+        ci.study_period AS "Period",
+        COUNT(DISTINCT ci.instance_id) AS "No of courses"
+    FROM allocation a
+    JOIN planned_activity pa ON a.planned_activity_id = pa.planned_activity_id
+    JOIN course_instance ci ON pa.instance_id = ci.instance_id
+    JOIN employee e ON a.employee_id = e.employee_id
+    JOIN person p ON e.person_id = p.person_id
+    WHERE ci.study_year = 2023
+    GROUP BY e.employee_id, p.first_name, p.last_name, ci.study_period
+)
+SELECT *
+FROM teacher_course_count
+WHERE "Period" = 'P3'
+ORDER BY "No of courses" DESC, "Teacher's Name";
